@@ -1,0 +1,8 @@
+{
+  "attention_is_all_you_need.pdf": ["attention is all you need", "transformer paper"],
+  "rag_lewis_2020.pdf": ["original rag", "lewis"],
+  "llama2_technical_report.pdf": ["llama 2", "llama2"],
+  "rag_survey_gao_2023.pdf": ["rag survey", "the survey", "gao"],
+  "lora_hu_2021.pdf": ["lora paper"],
+  "acme_annual_report.pdf": ["acme"]
+}

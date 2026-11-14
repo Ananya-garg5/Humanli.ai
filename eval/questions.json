@@ -1,0 +1,183 @@
+[
+  {
+    "kind": "answerable",
+    "q": "How many attention heads does the base Transformer use?",
+    "src": [
+      "attention"
+    ],
+    "kw": [
+      "8",
+      "eight"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "How many identical layers does the Transformer encoder have?",
+    "src": [
+      "attention"
+    ],
+    "kw": [
+      "6",
+      "six"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What retriever is used in the original RAG paper?",
+    "src": [
+      "rag_lewis"
+    ],
+    "kw": [
+      "dpr",
+      "dense passage"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What are the two RAG formulations in the original RAG paper?",
+    "src": [
+      "rag_lewis"
+    ],
+    "kw": [
+      "token"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What does LoRA freeze and what does it train?",
+    "src": [
+      "lora"
+    ],
+    "kw": [
+      "rank"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "By how much does LoRA reduce trainable parameters compared to full fine-tuning of GPT-3 175B?",
+    "src": [
+      "lora"
+    ],
+    "kw": [
+      "10,000",
+      "10000"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What range of parameter sizes does Llama 2 cover?",
+    "src": [
+      "llama2"
+    ],
+    "kw": [
+      "70"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What is Llama 2-Chat optimized for?",
+    "src": [
+      "llama2"
+    ],
+    "kw": [
+      "dialogue"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What are Naive RAG, Advanced RAG and Modular RAG?",
+    "src": [
+      "rag_survey"
+    ],
+    "kw": [
+      "modular"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "According to the RAG survey, what are the main components of the RAG framework?",
+    "src": [
+      "rag_survey"
+    ],
+    "kw": [
+      "augment"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "Compare how the original RAG paper and the RAG survey describe retrieval.",
+    "src": [
+      "rag_lewis",
+      "rag_survey"
+    ],
+    "kw": [
+      "retriev"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What was Acme's net profit in 2023?",
+    "src": [
+      "acme"
+    ],
+    "kw": [
+      "331"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "What was Acme's EBITDA margin in 2022?",
+    "src": [
+      "acme"
+    ],
+    "kw": [
+      "15.1"
+    ]
+  },
+  {
+    "kind": "answerable",
+    "q": "Who is the CEO of Acme?",
+    "src": [
+      "acme"
+    ],
+    "kw": [
+      "meera"
+    ]
+  },
+  {
+    "kind": "near",
+    "q": "How many parameters does GPT-4 have?",
+    "src": [],
+    "kw": []
+  },
+  {
+    "kind": "near",
+    "q": "What BLEU score did the RAG model get on German to English translation?",
+    "src": [],
+    "kw": []
+  },
+  {
+    "kind": "near",
+    "q": "Who is the CEO of Meta?",
+    "src": [],
+    "kw": []
+  },
+  {
+    "kind": "near",
+    "q": "What was Acme's net profit in 2019?",
+    "src": [],
+    "kw": []
+  },
+  {
+    "kind": "off",
+    "q": "What was Tesla's total revenue in 2023?",
+    "src": [],
+    "kw": []
+  },
+  {
+    "kind": "off",
+    "q": "What is the capital of Australia?",
+    "src": [],
+    "kw": []
+  }
+]

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Document RAG</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1c2330; --mute:#6b7585; --line:#e3e6eb; --accent:#2f5bea; --bot:#eef1f7; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); }
+  .app { display:grid; grid-template-columns:300px 1fr; height:100vh; }
+  aside { background:var(--card); border-right:1px solid var(--line); padding:20px; overflow:auto; }
+  h1 { font-size:17px; margin:0 0 4px; } .sub { color:var(--mute); font-size:13px; margin-bottom:18px; }
+  .drop { border:2px dashed var(--line); border-radius:10px; padding:18px; text-align:center; color:var(--mute); cursor:pointer; font-size:13px; }
+  .drop.over { border-color:var(--accent); color:var(--accent); }
+  ul { list-style:none; padding:0; margin:16px 0 0; } li { padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin-bottom:8px; font-size:13px; word-break:break-all; }
+  li small { display:block; color:var(--mute); }
+  #status { font-size:12px; color:var(--mute); margin-top:10px; min-height:16px; }
+  main { display:flex; flex-direction:column; min-width:0; }
+  header { padding:14px 22px; border-bottom:1px solid var(--line); background:var(--card); display:flex; justify-content:space-between; align-items:center; }
+  button { font:inherit; border:0; border-radius:8px; padding:8px 14px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--mute); border:1px solid var(--line); }
+  button:disabled { opacity:.5; cursor:default; }
+  #log { flex:1; overflow:auto; padding:22px; }
+  .msg { max-width:760px; margin:0 0 14px; padding:11px 14px; border-radius:12px; white-space:pre-wrap; }
+  .user { background:var(--accent); color:#fff; margin-left:auto; } .bot { background:var(--bot); }
+  .meta { margin-top:8px; font-size:12px; color:var(--mute); }
+  .chip { display:inline-block; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:1px 9px; margin:0 6px 4px 0; color:var(--ink); }
+  .note { font-style:italic; }
+  form { display:flex; gap:10px; padding:14px 22px; border-top:1px solid var(--line); background:var(--card); }
+  input[type=text] { flex:1; font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; }
+  @media (max-width:760px) { .app { grid-template-columns:1fr; height:auto; } aside { border-right:0; border-bottom:1px solid var(--line); } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>Multi-Document RAG</h1>
+    <div class="sub">Upload PDFs, then ask questions. Answers cite file and page.</div>
+    <label class="drop" id="drop">Drop PDFs here or click to choose
+      <input id="file" type="file" accept="application/pdf" multiple hidden>
+    </label>
+    <div id="status"></div>
+    <ul id="docs"></ul>
+  </aside>
+  <main>
+    <header><span id="count">No documents yet</span><button class="ghost" id="new">New chat</button></header>
+    <div id="log"></div>
+    <form id="form">
+      <input id="q" type="text" placeholder="Ask a question about your documents" autocomplete="off" maxlength="2000">
+      <button id="send">Send</button>
+    </form>
+  </main>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+let sid = null;
+
+function add(role, text, extra) {
+  const d = document.createElement("div"); d.className = "msg " + role; d.textContent = text;
+  if (extra) d.appendChild(extra);
+  $("log").appendChild(d); $("log").scrollTop = 1e9; return d;
+}
+function meta(res) {
+  const m = document.createElement("div"); m.className = "meta";
+  if (res.rewritten_question && res.rewritten_question !== res.asked) {
+    const n = document.createElement("div"); n.className = "note"; n.textContent = "Interpreted as: " + res.rewritten_question; m.appendChild(n);
+  }
+  res.sources.forEach(s => { const c = document.createElement("span"); c.className = "chip"; c.textContent = s.file + " p." + s.page; m.appendChild(c); });
+  const t = document.createElement("span"); t.textContent = res.seconds + "s"; m.appendChild(t);
+  return m;
+}
+async function loadDocs() {
+  const r = await fetch("/documents"); const j = await r.json();
+  $("docs").innerHTML = "";
+  j.documents.forEach(d => { const li = document.createElement("li"); li.textContent = d.file;
+    const s = document.createElement("small"); s.textContent = d.pages + " pages, " + d.chunks + " chunks"; li.appendChild(s); $("docs").appendChild(li); });
+  $("count").textContent = j.documents.length ? j.documents.length + " documents indexed" : "No documents yet";
+}
+async function upload(files) {
+  const fd = new FormData(); [...files].forEach(f => fd.append("files", f));
+  $("status").textContent = "Indexing... this can take a minute";
+  try {
+    const r = await fetch("/upload", { method: "POST", body: fd }); const j = await r.json();
+    $("status").textContent = j.results.map(x => x.file + ": " + x.status).join(" | ");
+    loadDocs();
+  } catch (e) { $("status").textContent = "Upload failed"; }
+}
+$("file").onchange = e => upload(e.target.files);
+const drop = $("drop");
+["dragover", "dragenter"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => upload(e.dataTransfer.files));
+
+$("form").onsubmit = async e => {
+  e.preventDefault(); const q = $("q").value.trim(); if (!q) return;
+  $("q").value = ""; $("send").disabled = true; add("user", q); const wait = add("bot", "Thinking...");
+  try {
+    const r = await fetch("/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q, session_id: sid }) });
+    const j = await r.json();
+    if (!r.ok) { wait.textContent = j.detail || "Something went wrong"; }
+    else { sid = j.session_id; j.asked = q; wait.textContent = j.answer; wait.appendChild(meta(j)); }
+  } catch (err) { wait.textContent = "Request failed"; }
+  $("send").disabled = false; $("q").focus();
+};
+$("new").onclick = async () => { if (sid) await fetch("/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sid }) }); sid = null; $("log").innerHTML = ""; };
+loadDocs();
+</script>
+</body>
+</html>
